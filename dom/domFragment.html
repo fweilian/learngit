@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>使用fragment进行重排重绘</title>
+</head>
+<body>
+<ul id="myList">
+  <li>a</li>
+  <li>b</li>
+</ul>
+<p>
+  向上面的ul中加入两个新的li，比较使用fragment和不使用的性能
+</p>
+
+<script>
+  console.time(0);
+  var newLi1 = document.createElement('li');
+  newLi1.innerHTML = 'c';
+
+  var newLi2 = document.createElement('li');
+  newLi2.innerHTML = 'd';
+
+  document.getElementById('myList').appendChild(newLi1);
+  document.getElementById('myList').appendChild(newLi2);
+  console.timeEnd(0)
+
+  console.time(1);
+  var fragment = document.createDocumentFragment();
+  var newLi1 = document.createElement('li');
+  newLi1.innerHTML = 'c';
+
+  var newLi2 = document.createElement('li');
+  newLi2.innerHTML = 'd';
+
+  fragment.appendChild(newLi1);
+  fragment.appendChild(newLi2);
+
+  document.getElementById('myList').appendChild(fragment);
+  console.timeEnd(1)
+</script>
+</body>
+</html>
