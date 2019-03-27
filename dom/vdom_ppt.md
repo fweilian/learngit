@@ -54,6 +54,112 @@
 ---
 
 
+
+## MVVM
+
+<font size=5>
+
+MVVM 是Model-View-ViewModel 的缩写，它是一种基于前端开发的架构模式，其核心是提供对View 和 ViewModel 的双向数据绑定，这使得ViewModel 的状态改变可以自动传递给 View，即所谓的数据双向绑定。
+
+![center 50%](mvvm.png)
+
+**目的在于更清楚地将用户界面（UI）的开发与 应用程序中业务逻辑和行为的开发区分开来**
+
+</font>
+
+---
+
+## MVVM
+
+
+- Model：真实状态内容的领域模型
+- View：用户在屏幕上看到的结构、布局和外观（UI）
+- viewModel：暴露公共属性和命令的视图的抽象
+
+
+<font size=4>
+
+```
+    <!--上图中的 View 部分-->
+    <div id="app">
+        <p>{{price}} 元</p>
+        <button v-on:click="addHandle">add</button>
+    </div>
+    
+    <script type="text/javascript">
+        /* 上图中的Model */
+        var model = {
+            price: 100
+        }
+        
+        /* 上图中的 ViewModel */
+        var vm = new Vue({
+            el: '#app',
+            data: model,
+            methods: {
+                addHandle: function () {
+                    this.price++
+                }
+            }
+        })
+    </script>
+```
+
+
+</font>
+
+---
+
+
+## Vue2的MVVM
+
+<font size=5>
+
+- 响应式: 实现一种观察者模式。在初始化页面的时候，监听 Model 中的数据，一旦有变化，立即触发通知，更新 View
+
+
+- 模板引擎：模板语法是一段 html 代码片段，但有很多 vue 定义的指令(v-on v-model 等)，模板引擎会把一个 html 片段最终解析成一个 JS 函数，让它真正动起来。
+
+- 虚拟 DOM：Model 中的数据一旦有变化，就会重新渲染 View，如果是直接去操作 DOM 修改 View 就很难做到性能的极致，而 vdom 就能做到，vdom 进行 diff 之后，再决定要真正修改哪些 DOM 节点
+
+</font>
+
+---
+
+## Vue2 整体流程图
+
+![center 60%](mvvm4.png)
+
+---
+
+## 响应式
+
+
+- 对象监听： [Object.defineProperty()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
+- 数据监听：直接修改需要监听的数组的原型
+- Observer 
+- walk
+- defineReactive
+- Dep
+
+---
+
+## 模板解析
+
+<font size=5>
+
+1. 将模板处理为 AST，即抽象语法树（Abstract Syntax Tree）
+
+2. 优化 AST ，找到最大静态子树, 为了提高后面更新 View 的效率
+
+3. 生成 render 函数，将模板字符串转换为 JS 真正可执行的函数
+
+
+</font>
+
+
+---
+
 ## Virtual DOM
 Virtual DOM 建立在 DOM 之上，是基于 DOM 的一层抽象，实际可理解为用更轻量的纯 JavaScript 对象（树）描述 DOM（树）
 
@@ -105,41 +211,14 @@ Virtual DOM 建立在 DOM 之上，是基于 DOM 的一层抽象，实际可理�
 
 ---
 
+## Vue VDom
 
-## Virtual DOM 实现Demo
-
-<font size=5>
-
-```
-// 1. 构建虚拟DOM
-var tree = el('div', {'id': 'container'}, [
-    el('h1', {style: 'color: blue'}, ['simple virtal dom']),
-    el('p', ['Hello, virtual-dom']),
-    el('ul', [el('li')])
-])
-
-// 2. 通过虚拟DOM构建真正的DOM
-var root = tree.render()
-document.body.appendChild(root)
-
-// 3. 生成新的虚拟DOM
-var newTree = el('div', {'id': 'container'}, [
-    el('h1', {style: 'color: red'}, ['simple virtal dom']),
-    el('p', ['Hello, virtual-dom']),
-    el('ul', [el('li'), el('li')])
-])
-
-// 4. 比较两棵虚拟DOM树的不同
-var patches = diff(tree, newTree)
-
-// 5. 在真正的DOM元素上应用变更
-patch(root, patches)
-```
-
-</font>
+- 解析模板最终生成 render 函数。
+- 初次渲染时，直接执行 render 函数。render 函数会生成 vnode ，然后 patch 到真实的 DOM 中，完成 View 的渲染。
+- Model 属性发生变化时，触发通知，重新执行 render 函数，生成 newVnode ，然后patch(vnode, newVnode)，针对两者进行 diff 算法，最终将有区别的部分重新渲染。
+- Model 属性再次发生变化时，又会触发通知 ……
 
 ---
-
 
 ## Virtual DOM 与 DOM 对比
 
@@ -147,58 +226,6 @@ patch(root, patches)
 - 组件的高度抽象化
 - 为函数式的 UI 编程方式打开了大门
 - 实现 SSR、同构渲染（如Weex）
-
----
-
-## MVVM
-
-<font size=5>
-
-MVVM 是Model-View-ViewModel 的缩写，它是一种基于前端开发的架构模式，其核心是提供对View 和 ViewModel 的双向数据绑定，这使得ViewModel 的状态改变可以自动传递给 View，即所谓的数据双向绑定。
-
-![center 55%](mvvm3.png)
-
-**目的在于更清楚地将用户界面（UI）的开发与 应用程序中业务逻辑和行为的开发区分开来**
-
-</font>
-
----
-
-## MVVM
-
-- Model：真实状态内容的领域模型
-- View：用户在屏幕上看到的结构、布局和外观（UI）
-- viewModel：暴露公共属性和命令的视图的抽象
-
-
-## MVVM实现数据绑定
-- 脏值检查（Angular）
-- 数据劫持（Vue）
-
----
-
-## Vue的MVVM实现原理
-
-<font size=4>
-
-Vue.js采用数据劫持结合发布者-订阅者模式的方式，通过`Object.defineProperty()`来劫持各个属性的`setter`，`getter`，在数据变动时发布消息给订阅者，触发相应的监听回调。
-
-![center 75%](mvvm2.png)
-
-1. 实现一个数据监听器Observer，能够对数据对象的所有属性进行监听，如有变动可拿到最新值并通知订阅者
-2. 实现一个指令解析器Compile，对每个元素节点的指令进行扫描和解析，根据指令模板替换数据，以及绑定相应的更新函数
-3. 实现一个Watcher，作为连接Observer和Compile的桥梁，能够订阅并收到每个属性变动的通知，执行指令绑定的相应回调函数，从而更新视图
-4. mvvm入口函数，整合以上三者
-
-[Object.defineProperty()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
-
-</font>
-
----
-
-## Vue渲染过程
-
-![](vue-render.jpg)
 
 ---
 
@@ -210,6 +237,7 @@ Vue.js采用数据劫持结合发布者-订阅者模式的方式，通过`Object
 [如何实现一个 Virtual DOM 算法](https://github.com/livoras/blog/issues/13)
 [浅谈 MVC、MVP 和 MVVM 架构模式](https://draveness.me/mvx)
 [mvvm实现](https://github.com/DMQ/mvvm)
+[Vue2 MVVM原理](https://github.com/wangfupeng1988/learn-vue2-mvvm)
 
 
 
